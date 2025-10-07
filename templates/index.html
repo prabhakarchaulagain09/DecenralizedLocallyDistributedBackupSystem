@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌐 Decentralized Backup System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-upload-label {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+
+        .file-upload-label:hover {
+            transform: translateY(-2px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .file-actions button {
+            padding: 6px 12px;
+            font-size: 0.9em;
+        }
+
+        .log-section {
+            background: #1e1e1e;
+            color: #0f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .log-entry {
+            margin: 5px 0;
+        }
+
+        .log-success {
+            color: #4ec9b0;
+        }
+
+        .log-error {
+            color: #f48771;
+        }
+
+        .log-warning {
+            color: #ce9178;
+        }
+
+        .log-info {
+            color: #9cdcfe;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 500px;
+            margin: 100px auto;
+            padding: 30px;
+            border-radius: 15px;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            min-height: 200px;
+        }
+
+        .modal-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .spinner {
+            display: none;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 Decentralized Backup System</h1>
+            <p style="color: #666; margin-top: 10px;">Manage your distributed file storage</p>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalFiles">0</div>
+                    <div class="stat-label">Total Files</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalSize">0 MB</div>
+                    <div class="stat-label">Storage Used</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="nodesOnline">0/0</div>
+                    <div class="stat-label">Nodes Online</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="action-bar">
+                <label class="file-upload-label" for="fileInput">
+                    ➕ Add Files
+                </label>
+                <input type="file" id="fileInput" multiple>
+                <button onclick="syncFiles()" class="btn-success">🔄 Sync Now</button>
+                <button onclick="refreshFiles()">↻ Refresh</button>
+                <button onclick="showSettings()">⚙️ Settings</button>
+            </div>
+
+            <div class="spinner" id="spinner"></div>
+
+            <div id="filesTable">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📁</div>
+                    <p>No files in storage</p>
+                    <p style="font-size: 0.9em; margin-top: 10px;">Upload files to get started</p>
+                </div>
+            </div>
+
+            <div class="log-section" id="logSection">
+                <div class="log-entry log-info">System ready. Waiting for commands...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h2>⚙️ Node Configuration</h2>
+            <p style="color: #666; margin-bottom: 15px;">Enter node addresses (one per line, format: IP:PORT)</p>
+            <textarea id="nodesTextarea" placeholder="192.168.1.10:8000&#10;192.168.1.11:8000"></textarea>
+            <div class="modal-actions">
+                <button onclick="closeSettings()">Cancel</button>
+                <button onclick="saveSettings()" class="btn-success">💾 Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshFiles();
+            updateStats();
+            loadNodes();
+            
+            // Auto-refresh every 30 seconds
+            setInterval(updateStats, 30000);
+        });
+
+        // File upload handler
+        document.getElementById('fileInput').addEventListener('change', async function(e) {
+            const files = e.target.files;
+            if (files.length === 0) return;
+
+            for (let file of files) {
+                await uploadFile(file);
+            }
+            
+            e.target.value = ''; // Reset input
+            refreshFiles();
+            updateStats();
+        });
+
+        async function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                showSpinner();
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    log(`✓ Uploaded '${file.name}'`, 'success');
+                } else {
+                    log(`✗ Failed to upload '${file.name}': ${data.error}`, 'error');
+                }
+            } catch (error) {
+                log(`✗ Upload error: ${error.message}`, 'error');
+            } finally {
+                hideSpinner();
+            }
+        }
+
+        async function refreshFiles() {
+            try {
+                showSpinner();
+                const response = await fetch('/api/files');
+                const files = await response.json();
+
+                const tableDiv = document.getElementById('filesTable');
+                
+                if (files.length === 0) {
+                    tableDiv.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📁</div>
+                            <p>No files in storage</p>
+                            <p style="font-size: 0.9em; margin-top: 10px;">Upload files to get started</p>
+                        </div>
+                    `;
+                } else {
+                    let html = '<table><thead><tr>';
+                    html += '<th>📄 Name</th><th>📊 Size</th><th>🕒 Modified</th><th>🔒 Hash</th><th>Actions</th>';
+                    html += '</tr></thead><tbody>';
+
+                    files.forEach(file => {
+                        html += `<tr>
+                            <td>${file.name}</td>
+                            <td>${formatSize(file.size)}</td>
+                            <td>${new Date(file.modified).toLocaleString()}</td>
+                            <td>${file.hash}...</td>
+                            <td class="file-actions">
+                                <button onclick="downloadFile('${file.name}')">⬇️ Download</button>
+                                <button onclick="deleteFile('${file.name}')" class="btn-danger">🗑️ Delete</button>
+                            </td>
+                        </tr>`;
+                    });
+
+                    html += '</tbody></table>';
+                    tableDiv.innerHTML = html;
+                }
+            } catch (error) {
+                log(`✗ Error loading files: ${error.message}`, 'error');
+            } finally {
+                hideSpinner();
+            }
+        }
+
+        async function deleteFile(filename) {
+            if (!confirm(`Delete '${filename}'?`)) return;
+
+            try {
+                showSpinner();
+                const response = await fetch(`/api/delete/${filename}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    log(`✓ Deleted '${filename}'`, 'success');
+                    refreshFiles();
+                    updateStats();
+                } else {
+                    const data = await response.json();
+                    log(`✗ Failed to delete: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                log(`✗ Delete error: ${error.message}`, 'error');
+            } finally {
+                hideSpinner();
+            }
+        }
+
+        async function downloadFile(filename) {
+            window.location.href = `/api/download/${filename}`;
+            log(`⬇️ Downloading '${filename}'`, 'info');
+        }
+
+        async function syncFiles() {
+            log('🔄 Starting sync...', 'info');
+            
+            try {
+                showSpinner();
+                const response = await fetch('/api/sync', {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    data.results.forEach(result => {
+                        if (result.status === 'success') {
+                            log(`✓ Synced with ${result.node} (${result.files_sent} files sent)`, 'success');
+                        } else if (result.status === 'unreachable') {
+                            log(`⚠ Node ${result.node} is unreachable`, 'warning');
+                        } else {
+                            log(`✗ Sync failed with ${result.node}: ${result.error}`, 'error');
+                        }
+                    });
+                    log('✅ Sync completed', 'success');
+                } else {
+                    log(`✗ Sync failed: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                log(`✗ Sync error: ${error.message}`, 'error');
+            } finally {
+                hideSpinner();
+            }
+        }
+
+        async function updateStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const stats = await response.json();
+
+                document.getElementById('totalFiles').textContent = stats.total_files;
+                document.getElementById('totalSize').textContent = formatSize(stats.total_size);
+                document.getElementById('nodesOnline').textContent = `${stats.nodes_online}/${stats.nodes_total}`;
+            } catch (error) {
+                console.error('Error updating stats:', error);
+            }
+        }
+
+        async function loadNodes() {
+            try {
+                const response = await fetch('/api/nodes');
+                const data = await response.json();
+                document.getElementById('nodesTextarea').value = data.nodes.join('\n');
+            } catch (error) {
+                console.error('Error loading nodes:', error);
+            }
+        }
+
+        function showSettings() {
+            document.getElementById('settingsModal').style.display = 'block';
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        async function saveSettings() {
+            const textarea = document.getElementById('nodesTextarea');
+            const nodes = textarea.value.split('\n')
+                .map(line => line.trim())
+                .filter(line => line.length > 0);
+
+            try {
+                const response = await fetch('/api/nodes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ nodes })
+                });
+
+                if (response.ok) {
+                    log(`✓ Settings saved (${nodes.length} nodes configured)`, 'success');
+                    closeSettings();
+                    updateStats();
+                } else {
+                    log('✗ Failed to save settings', 'error');
+                }
+            } catch (error) {
+                log(`✗ Error saving settings: ${error.message}`, 'error');
+            }
+        }
+
+        function log(message, type = 'info') {
+            const logSection = document.getElementById('logSection');
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${timestamp}] ${message}`;
+            logSection.appendChild(entry);
+            logSection.scrollTop = logSection.scrollHeight;
+        }
+
+        function formatSize(bytes) {
+            const units = ['B', 'KB', 'MB', 'GB'];
+            let size = bytes;
+            let unitIndex = 0;
+            
+            while (size >= 1024 && unitIndex < units.length - 1) {
+                size /= 1024;
+                unitIndex++;
+            }
+            
+            return `${size.toFixed(1)} ${units[unitIndex]}`;
+        }
+
+        function showSpinner() {
+            document.getElementById('spinner').style.display = 'block';
+        }
+
+        function hideSpinner() {
+            document.getElementById('spinner').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('settingsModal');
+            if (event.target === modal) {
+                closeSettings();
+            }
+        }
+    </script>
+</body>
+</html>
